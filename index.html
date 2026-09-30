@@ -740,19 +740,43 @@ function olvidarRegionesGestion(){try{sessionStorage.removeItem(claveRegionesGes
     const tr=document.createElement("tr");if(esTotal)tr.className="total-row";
     const puedeComentar=sesion&&["ENCARGADO","ADMINISTRADOR"].includes(sesion.rol);
     const comentario=!esTotal&&puedeComentar?`<button class="btn-comment ${x.comentario?'has-comment':''}" title="${x.comentario?'Ver o actualizar comentario':'Agregar comentario'}" onclick="abrirComentario('${escJs(x.pdv)}')">💬</button>`:"";
-    const pdvFiltro=esTotal?"":String(x.pdv||""),pdvActivo=!esTotal&&filtroResumenActivo&&filtroResumenActivo.pdv===pdvFiltro&&!filtroResumenActivo.categoria;
-    if(!esTotal&&filtroResumenActivo&&filtroResumenActivo.pdv===pdvFiltro)tr.classList.add("summary-row-active");
+    const pdvFiltro=esTotal?"":String(x.pdv||""),pdvActivo=!esTotal&&celdaResumenSeleccionada(pdvFiltro,'');
+    if(!esTotal&&filaResumenSeleccionada(pdvFiltro))tr.classList.add("summary-row-active");
     const celdaPdv=esTotal?`<td><b>${esc(x.pdv)}</b></td>`:`<td class="summary-clickable${pdvActivo?' summary-selected':''}" title="Filtrar todas las guías de ${esc(x.pdv)}" onclick="aplicarFiltroResumen('${escJs(pdvFiltro)}','')"><b>${esc(x.pdv)}</b></td>`;
     tr.innerHTML=`${celdaPdv}<td>${num(x.despachosAyer||0)}</td>${celdaNumeroResumen(x.h120o168,pdvFiltro,"h120o168",esTotal)}${celdaNumeroResumen(x.h360NoDevuelto,pdvFiltro,"h360NoDevuelto",esTotal)}${celdaNumeroResumen(x.h360PorDevolver,pdvFiltro,"h360PorDevolver",esTotal)}${celdaNumeroResumen(x.h720NoDevuelto,pdvFiltro,"h720NoDevuelto",esTotal)}${celdaNumeroResumen(x.h720PorDevolver,pdvFiltro,"h720PorDevolver",esTotal)}${celdaNumeroResumen(x.brecha48a120,pdvFiltro,"brecha48a120",esTotal)}${celdaNumeroResumen(x.brecha48NoLlegado,pdvFiltro,"brecha48NoLlegado",esTotal)}${celdaNumeroResumen(x.brecha120a144,pdvFiltro,"brecha120a144",esTotal)}${celdaNumeroResumen(x.brecha120NoLlegado,pdvFiltro,"brecha120NoLlegado",esTotal)}${celdaNumeroResumen(x.mayor144EnPDV,pdvFiltro,"mayor144EnPDV",esTotal)}${celdaNumeroResumen(Number(x.mayor144NoLlegado||0)+Number(x.brecha144a168NoLlegado||0),pdvFiltro,"mayor144NoLlegado",esTotal)}${celdaNumeroResumen(x.total,pdvFiltro,"totalCasos",esTotal)}${celdaNumeroResumen(x.totalCritico,pdvFiltro,"totalCritico",esTotal,"summary-critical")}${celdaNumeroResumen(x.guiasUnicas,pdvFiltro,"guiasUnicas",esTotal)}<td class="comment-col">${comentario}</td>`;
     return tr;
   }
 
-  function celdaNumeroResumen(valor,pdv,categoria,esTotal,claseExtra){const n=Number(valor||0),extra=claseExtra?" "+claseExtra:"",punto=esTotal?"":String(pdv||""),tipo=String(categoria||""),activo=filtroResumenActivo&&filtroResumenActivo.pdv===punto&&filtroResumenActivo.categoria===tipo;if(n===0)return `<td class="number zero-value${extra}">0</td>`;const accion=!punto&&!tipo?"limpiarFiltroResumen(true)":`aplicarFiltroResumen('${escJs(punto)}','${escJs(tipo)}')`;const titulo=!punto&&!tipo?"Mostrar todas las guías":`Filtrar: ${esc(etiquetaFiltroResumen(punto,tipo))}`;return `<td class="number summary-clickable${extra}${activo?' summary-selected':''}" title="${titulo}" onclick="${accion}">${num(n)}</td>`;}
+  function celdaNumeroResumen(valor,pdv,categoria,esTotal,claseExtra){const n=Number(valor||0),extra=claseExtra?" "+claseExtra:"",punto=esTotal?"":String(pdv||""),tipo=String(categoria||""),activo=celdaResumenSeleccionada(punto,tipo);if(n===0)return `<td class="number zero-value${extra}">0</td>`;const accion=!punto&&!tipo?"limpiarFiltroResumen(true)":`aplicarFiltroResumen('${escJs(punto)}','${escJs(tipo)}')`;const titulo=!punto&&!tipo?"Mostrar todas las guías":`Filtrar: ${esc(etiquetaFiltroResumen(punto,tipo))}`;return `<td class="number summary-clickable${extra}${activo?' summary-selected':''}" title="${titulo}" onclick="${accion}">${num(n)}</td>`;}
   function etiquetaFiltroResumen(pdv,categoria){const tipo=ETIQUETAS_RESUMEN[categoria]||"Todos los casos";if(pdv&&categoria)return pdv+" · "+tipo;if(pdv)return pdv+" · Todos los casos";if(categoria)return "Todos los PDV · "+tipo;return "Todos los casos";}
-  function aplicarFiltroResumen(pdv,categoria){pdv=String(pdv||"");categoria=String(categoria||"");if(filtroResumenActivo&&filtroResumenActivo.pdv===pdv&&filtroResumenActivo.categoria===categoria){limpiarFiltroResumen(false);return;}filtroResumenActivo={pdv:pdv,categoria:categoria};actualizarChipResumen();renderResumen();filtrar();document.getElementById("detalleGuiasPanel").scrollIntoView({behavior:"smooth",block:"start"});}
-  function limpiarFiltroResumen(desplazar){filtroResumenActivo=null;actualizarChipResumen();renderResumen();filtrar();if(desplazar)document.getElementById("detalleGuiasPanel").scrollIntoView({behavior:"smooth",block:"start"});}
-  function actualizarChipResumen(){const chip=document.getElementById("filtroResumenChip");if(!filtroResumenActivo){chip.classList.add("hidden");chip.innerHTML="";return;}chip.classList.remove("hidden");chip.innerHTML=`${esc(etiquetaFiltroResumen(filtroResumenActivo.pdv,filtroResumenActivo.categoria))}<button type="button" title="Quitar filtro" onclick="limpiarFiltroResumen(false)">×</button>`;}
-  function coincideFiltroResumen(x){if(!filtroResumenActivo)return true;if(!cumpleFiltrosGuiaResumen(x))return false;const casos=Array.isArray(x.casosResumen)?x.casosResumen:[],pdv=filtroResumenActivo.pdv,categoria=filtroResumenActivo.categoria,criticas=["h720NoDevuelto","h720PorDevolver","mayor144EnPDV","mayor144NoLlegado"];return casos.some(c=>{if(pdv&&String(c.pdv||"")!==pdv)return false;const tipo=String(c.categoria||"");if(!categoria||categoria==="totalCasos"||categoria==="guiasUnicas")return true;if(categoria==="totalCritico")return criticas.includes(tipo);return tipo===categoria||(categoria==="mayor144NoLlegado"&&tipo==="brecha144a168NoLlegado");});}
+  
+  
+  
+  function seleccionesResumen(){return Array.isArray(filtroResumenActivo)?filtroResumenActivo:[];}
+function celdaResumenSeleccionada(pdv,categoria){return seleccionesResumen().some(s=>s.pdv===pdv&&s.categoria===categoria);}
+function filaResumenSeleccionada(pdv){return seleccionesResumen().some(s=>s.pdv===pdv);}
+function aplicarFiltroResumen(pdv,categoria){
+ pdv=String(pdv||'');categoria=String(categoria||'');
+ const actuales=seleccionesResumen();
+ const nuevas=celdaResumenSeleccionada(pdv,categoria)?actuales.filter(s=>s.pdv!==pdv||s.categoria!==categoria):[...actuales,{pdv,categoria}];
+ filtroResumenActivo=nuevas.length?nuevas:null;
+ actualizarChipResumen();renderResumen();filtrar();
+}
+function limpiarFiltroResumen(desplazar){
+ filtroResumenActivo=null;actualizarChipResumen();renderResumen();filtrar();
+ if(desplazar)document.getElementById('detalleGuiasPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function actualizarChipResumen(){
+ const chip=document.getElementById('filtroResumenChip'),seleccion=seleccionesResumen();
+ chip.classList.toggle('hidden',!seleccion.length);chip.replaceChildren();
+ if(!seleccion.length)return;
+ const texto=document.createElement('span');texto.textContent=seleccion.length+' celdas seleccionadas · '+seleccion.map(s=>etiquetaFiltroResumen(s.pdv,s.categoria)).join(' | ');chip.append(texto);
+ const limpiar=document.createElement('button');limpiar.type='button';limpiar.textContent='Limpiar selección del resumen';limpiar.onclick=()=>limpiarFiltroResumen(false);chip.append(limpiar);
+ const ver=document.createElement('button');ver.type='button';ver.textContent='Ver detalle';ver.onclick=()=>document.getElementById('detalleGuiasPanel').scrollIntoView({behavior:'smooth',block:'start'});chip.append(ver);
+}
+function coincideFiltroResumen(x){return !seleccionesResumen().length||seleccionesResumen().some(s=>coincideFiltroResumenIndividual(x,s));}
+
+function coincideFiltroResumenIndividual(x,seleccion){if(!seleccion)return true;if(!cumpleFiltrosGuiaResumen(x))return false;const casos=Array.isArray(x.casosResumen)?x.casosResumen:[],pdv=seleccion.pdv,categoria=seleccion.categoria,criticas=["h720NoDevuelto","h720PorDevolver","mayor144EnPDV","mayor144NoLlegado"];return casos.some(c=>{if(pdv&&String(c.pdv||"")!==pdv)return false;const tipo=String(c.categoria||"");if(!categoria||categoria==="totalCasos"||categoria==="guiasUnicas")return true;if(categoria==="totalCritico")return criticas.includes(tipo);return tipo===categoria||(categoria==="mayor144NoLlegado"&&tipo==="brecha144a168NoLlegado");});}
 
   function abrirComentario(pdv){const x=(resumen.filas||[]).find(r=>r.pdv===pdv);if(!x)return;document.getElementById("commentModal").dataset.pdv=pdv;document.getElementById("commentTitle").textContent="COMENTARIO · "+pdv;document.getElementById("commentText").value=x.comentario||"";document.getElementById("commentMeta").textContent=x.comentarioFecha?("Último registro: "+x.comentarioFecha+" · "+(x.comentarioUsuario||"")):"Sin comentario previo";document.getElementById("commentModal").style.display="flex";setTimeout(()=>document.getElementById("commentText").focus(),50);}
   function cerrarComentario(){document.getElementById("commentModal").style.display="none";}
