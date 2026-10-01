@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <script src="./config.js"></script>
-<script src="./bridge.js"></script>
+<script src="./bridge.js?v=gestion-v2-1"></script>
   <base target="_top">
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Portal PDV · V16</title>
@@ -110,7 +110,7 @@
   <div id="app" class="hidden">
     <header><div class="header-inner"><div><div class="title">📋 Revisión de Guías PDV · V16</div><div class="subtitle">Resumen de casos y registro de observaciones</div></div><div class="actions"><span id="userBadge" class="badge"></span><button class="secondary" onclick="cargarDatos(null,true)">🔄 Actualizar</button><button class="danger" onclick="salir()">Salir</button></div></div></header>
     <main>
-      <div class="view-tabs"><button id="tabGestion" class="view-tab active" onclick="mostrarVista('gestion')">📋 Gestión de guías</button><button id="tabExcel" class="view-tab" onclick="mostrarVista('excel')">📤 Consulta desde Excel</button></div>
+      <div class="view-tabs"><button id="tabGestion" class="view-tab active" onclick="mostrarVista('gestion')">📋 Gestión de guías</button><button id="tabExcel" class="view-tab" onclick="mostrarVista('excel')">📤 Consulta desde Excel</button><a data-modulo-v2="true" href="./pdv-v2.html" class="view-tab">Gestión de guías V2</a></div>
       <div id="viewGestion" class="app-view">
       <div class="cards"><div class="card"><b id="total">0</b><span>Total</span></div><div class="card"><b id="pendientes">0</b><span>Pendientes</span></div><div class="card"><b id="proceso">0</b><span>En proceso</span></div><div class="card"><b id="finalizados">0</b><span>Finalizados</span></div></div>
 
