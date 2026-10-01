@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><script>window.V16_GESTION_V2=true;</script>
 <script src="./config.js"></script>
-<script src="./bridge.js?v=gestion-v2-1"></script>
+<script src="./bridge.js?v=gestion-v2-2"></script>
   <base target="_top">
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Gestión de guías V2</title>
@@ -116,7 +116,7 @@
 
       <section class="panel"><div class="panel-title">Resumen de Brecha y Cola Larga <span class="readonly-note">SOLO LECTURA</span></div><div id="gestionV2Status" style="padding: 12px; background: rgb(239, 246, 255); color: rgb(30, 64, 175); border-radius: 8px; margin: 12px 0px;">Gestión de guías V2 · Fuentes y comentarios compartidos con Gestión actual. Clasificación calculada cada minuto.</div><div class="table-wrap"><table class="summary-table">
         
-        <thead><tr><th rowspan="3">PDV</th><th rowspan="3">DESPACHOS AYER</th><th colspan="4">COLA LARGA</th><th colspan="4">BRECHA DE TRAZABILIDAD</th><th rowspan="3">TOTAL</th><th rowspan="3" class="summary-critical">TOTAL CRÍTICO</th><th rowspan="3">GUÍAS ÚNICAS</th><th rowspan="3">💬</th></tr><tr><th colspan="2">No devuelto</th><th colspan="2">Por devolver</th><th colspan="2">En el PDV</th><th colspan="2">No llegados al PDV</th></tr><tr><th>≥600 H<br>≥25 días</th><th>120 o 168 H</th><th>≥600 H<br>≥25 días</th><th>120 o 168 H</th><th>≥48 y &lt;120 H</th><th>≥120 H</th><th>≥48 y &lt;120 H</th><th>≥120 H</th></tr></thead>
+        <thead><tr><th rowspan="3">PDV</th><th rowspan="3">DESPACHOS AYER</th><th colspan="4">COLA LARGA</th><th colspan="4">BRECHA DE TRAZABILIDAD</th><th rowspan="3">TOTAL</th><th rowspan="3" class="summary-critical">TOTAL CRÍTICO</th><th rowspan="3">GUÍAS ÚNICAS</th><th rowspan="3">💬</th></tr><tr><th colspan="2">No devuelto</th><th colspan="2">Por devolver</th><th colspan="2">En el PDV</th><th colspan="2">No llegados al PDV</th></tr><tr><th>120 o 168 H</th><th>≥600 H<br>≥25 días</th><th>120 o 168 H</th><th>≥600 H<br>≥25 días</th><th>≥48 y &lt;120 H</th><th>≥120 H</th><th>≥48 y &lt;120 H</th><th>≥120 H</th></tr></thead>
         <tbody id="resumenBody"></tbody>
       </table></div></section>
 
@@ -824,7 +824,7 @@ function actualizarFiltroResumenExcel(){
 </script>
 <div id="excelQrModal" class="modal" onclick="if(event.target===this)this.style.display='none'"><div class="modal-card" style="width:min(1700px,98vw);max-height:90vh;overflow:auto"><button class="secondary" onclick="document.getElementById('excelQrModal').style.display='none'">Cerrar</button><button type="button" class="secondary" onclick="imprimirGuiasSeleccionadasExcel()">Imprimir QR seleccionados</button><div class="portada-pdf-controles" style="padding:10px;margin:10px 0;background:#f1f5f9;border-radius:6px"><label style="display:inline-block">Cargar / cambiar portada <input type="file" accept="image/png,image/jpeg,image/webp" onchange="cargarPortadaPdf(event)"></label> <button type="button" class="secondary" onclick="quitarPortadaPdf()">Quitar portada</button><p class="portada-pdf-estado"></p><img hidden="" alt="Vista previa de portada" style="max-width:180px;max-height:100px;object-fit:contain"></div><h3>Guías seleccionadas</h3><div id="excelQrGroups"></div></div></div><div id="detalleGestionModal" class="modal" onclick="if(event.target===this)this.style.display='none'"><div class="modal-card" style="width:98vw;max-width:1500px"><button class="secondary" onclick="document.getElementById('detalleGestionModal').style.display='none'">Cerrar</button> <button class="success" onclick="imprimirDetalleSeleccionadoGestion()">Imprimir / Guardar PDF</button><div class="portada-pdf-controles" style="padding:10px;margin:10px 0;background:#f1f5f9;border-radius:6px"><label style="display:inline-block">Cargar / cambiar portada <input type="file" accept="image/png,image/jpeg,image/webp" onchange="cargarPortadaPdf(event)"></label> <button type="button" class="secondary" onclick="quitarPortadaPdf()">Quitar portada</button><p class="portada-pdf-estado"></p><img hidden="" alt="Vista previa de portada" style="max-width:180px;max-height:100px;object-fit:contain"></div><p>Detalle de la selección activa. Se muestran los comentarios guardados.</p><iframe id="detalleGestionPreview" title="Vista previa del detalle seleccionado" style="width:100%;height:72vh;border:1px solid #cbd5e1;background:white"></iframe></div></div>
 
-<script>const COLUMNAS_V2=['h720NoDevuelto','h360NoDevuelto','h720PorDevolver','h360PorDevolver','brecha48a120','mayor144EnPDV','brecha48NoLlegado','mayor144NoLlegado'];
+<script>const COLUMNAS_V2=['h360NoDevuelto','h720NoDevuelto','h360PorDevolver','h720PorDevolver','brecha48a120','mayor144EnPDV','brecha48NoLlegado','mayor144NoLlegado'];
 Object.assign(ETIQUETAS_RESUMEN,{h720NoDevuelto:'Cola larga · ≥600 H · No devuelto',h360NoDevuelto:'Cola larga · 120/168 H · No devuelto',h720PorDevolver:'Cola larga · ≥600 H · Por devolver',h360PorDevolver:'Cola larga · 120/168 H · Por devolver',brecha48a120:'Brecha · ≥48 y <120 H · En el PDV',mayor144EnPDV:'Brecha · ≥120 H · En el PDV',brecha48NoLlegado:'Brecha · ≥48 y <120 H · No llegados',mayor144NoLlegado:'Brecha · ≥120 H · No llegados'});
 function celdaV2(valor,pdv,categoria,total=false){
  const td=document.createElement('td');td.className='number';td.textContent=num(valor||0);
