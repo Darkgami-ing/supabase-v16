@@ -113,6 +113,7 @@
 .deadline-cutoff{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;color:#1e40af}
 .deadline-cutoff label{display:flex;gap:8px;align-items:center;font-weight:600;font-size:13px}.deadline-cutoff input{width:auto;accent-color:#2563eb}.deadline-cutoff small{font-size:12px;color:#475569}
 @media(max-width:850px){.date-filter-row{grid-template-columns:1fr}.date-filter-row input[type=datetime-local]{max-width:190px}}
+.entry-date{margin-top:9px;padding-top:8px;border-top:1px solid #e2e8f0;min-width:130px;line-height:1.5;color:#334155;font-size:12px}.entry-date b,.entry-date small,.entry-date span{display:block}.entry-date b{font-size:11px;color:#475569}.entry-date small{font-size:10px;color:#64748b}.entry-date span{font-variant-numeric:tabular-nums}
 </style></head>
 <body>
   <section id="login" class="login">
@@ -835,7 +836,7 @@ function coincideFiltroResumenIndividual(x,seleccion){if(!seleccion)return true;
       <td class="check-cell"><input class="row-check" type="checkbox" ${marcada?"checked":""} aria-label="Seleccionar guía ${esc(x.guia)}" onchange="toggleSeleccionFila(${fila},this.checked)"></td>
       <td><span class="guide">${esc(x.guia)}</span><button type="button" class="qr" onclick="mostrarQR('${escJs(x.guia)}')">QR</button><button type="button" class="copy-guide" title="Copiar número de guía" onclick="copiarGuia('${escJs(x.guia)}')">📋 Copiar</button></td>
       <td>${esc(x.encargado)}</td><td>${esc(x.pdv)}</td><td class="gestion-destination">${formatearDestinoGestion(x)}</td><td>${esc(x.area)}</td>
-      <td><span class="state ${claseEstado(x.estado)}">${esc(x.estado)}</span><div class="date">${esc(x.fecha||"")}</div></td><td class="type-cell">${formatearTipo(x.tipo)}</td><td class="update-cell">${formatearUltimaActualizacion(x)}</td>
+      <td><span class="state ${claseEstado(x.estado)}">${esc(x.estado)}</span>${bloqueTiempoEntrada(x)}<div class="date">${esc(x.fecha||"")}</div></td><td class="type-cell">${formatearTipo(x.tipo)}</td><td class="update-cell">${formatearUltimaActualizacion(x)}</td>
       <td class="edit"><textarea id="comentario-${x.fila}" placeholder="Comentario del encargado">${esc(x.comentario||"")}</textarea><select id="cierre-${x.fila}"><option value="">¿Cerrar caso?</option><option value="SI" ${String(x.cerro).toUpperCase()==="SI"?"selected":""}>SI</option><option value="NO" ${String(x.cerro).toUpperCase()==="NO"?"selected":""}>NO</option></select><label class="share-pdv"><input id="visible-pdv-${x.fila}" type="checkbox" ${x.comentarioVisiblePDV?"checked":""}><span>Notificar / mostrar al PDV</span></label></td>
       <td class="obs">${esc(x.observacionPDV||"Sin observación")}<div class="date">${esc(x.fechaPDV||"")}</div></td>
       <td class="action-cell"><button id="guardar-${x.fila}" class="small" onclick="guardarRevision(${Number(x.fila)})">Guardar</button></td>`;body.appendChild(tr);});
@@ -1199,6 +1200,10 @@ setInterval(()=>{
  for(const prefijo of ['fEntrada','excelEntrada'])if(document.querySelector('#'+prefijo+'Rapidos input:checked'))cambiarEntradaExportacion(prefijo);
 },60000);
 
+function bloqueTiempoEntrada(x){
+ const fecha=fechaEscaneoValida(x.tiempoEntradaExportacion);
+ return '<div class="entry-date"><b>Tiempo de entrada</b><small>Exportación de guías</small><span>'+esc(fecha?formatearFechaExcel(fecha):'')+'</span></div>';
+}
 function corteMananaDiez(ahora=new Date()){
  const partes=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Lima',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(ahora);
  const valor=tipo=>Number(partes.find(p=>p.type===tipo).value);
