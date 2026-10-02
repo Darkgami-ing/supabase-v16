@@ -1,0 +1,10 @@
+EXPORTAR PDF POR PDV - SOLO GUÍAS FILTRADAS
+
+1. Copia index.html, pdv.html, gestion-v2.html, pdv-v2.html, pdf-pdv.js y PDF-LICENSES.txt a la raíz de tu repositorio GitHub, junto a bridge.js.
+2. Espera a que termine el despliegue y recarga con Ctrl+F5.
+3. En Consulta desde Excel aplica los filtros que necesites.
+4. Pulsa Descargar PDF por PDV (ZIP).
+5. Descomprime el ZIP: la carpeta PDF_por_PDV contiene un PDF por PDV con guías del filtro activo en todas las páginas.
+
+No necesita seleccionar las guías. No incluye otras guías seleccionadas fuera del filtro. Agrupa por repartidor, muestra guía, último estado y distrito, e incluye la portada guardada. Generación horizontal directa sin diálogo de impresión. Permite cancelar y volver a descargar el ZIP generado.
+No requiere cambios SQL ni nueva carga de fuentes. Incluye los últimos ajustes de colores y anchos del resumen V2.
