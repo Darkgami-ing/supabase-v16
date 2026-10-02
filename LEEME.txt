@@ -1,7 +1,9 @@
-RESUMEN COMPACTO + DESCARGA PNG
-Reemplaza index.html, pdv.html, gestion-v2.html y pdv-v2.html en la raíz de GitHub.
-Espera el despliegue y recarga con Ctrl+F5.
-La tabla resumen tiene un máximo de 1100 píxeles, columnas ajustadas y valores cero en blanco, incluidos subtotales.
-El botón Descargar imagen del resumen genera un PNG con los filtros y grupos desplegados actuales. Incluye todas las filas desplegadas aunque necesites desplazarte para verlas.
-Para incluir una región o área contraída, despliégala antes de descargar.
-Los valores y cálculos no cambian. Conserva la exportación PDF por PDV previa (mantén pdf-pdv.js en GitHub).
+FILTRO DE VARIAS GUÍAS
+Reemplaza index.html, pdv.html, gestion-v2.html y pdv-v2.html en GitHub. Espera el despliegue y recarga con Ctrl+F5.
+En Gestión (filtros de detalle) y Consulta desde Excel abre Filtrar varias guías, pega una columna desde Excel y pulsa Aplicar lista.
+Acepta saltos de línea, tabulaciones, espacios, comas y punto y coma. Elimina duplicados y compara la guía completa sin distinguir mayúsculas.
+Muestra encontradas en datos disponibles, visibles con todos los filtros y no encontradas. La lista no amplía los permisos del usuario.
+Limpiar lista retira este filtro y conserva los demás. Limpiar filtros en Gestión también retira la lista.
+El ZIP de PDF por PDV usa el resultado filtrado de Consulta desde Excel. No es necesario marcar las guías.
+La selección manual anterior se mantiene; las acciones sobre guías seleccionadas siguen utilizando esa selección.
+Incluye los ajustes anteriores de tabla compacta, ceros ocultos y botón PNG. Conserva pdf-pdv.js y los demás archivos del sitio.
