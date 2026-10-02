@@ -1,10 +1,7 @@
-EXPORTAR PDF POR PDV - SOLO GUÍAS FILTRADAS
-
-1. Copia index.html, pdv.html, gestion-v2.html, pdv-v2.html, pdf-pdv.js y PDF-LICENSES.txt a la raíz de tu repositorio GitHub, junto a bridge.js.
-2. Espera a que termine el despliegue y recarga con Ctrl+F5.
-3. En Consulta desde Excel aplica los filtros que necesites.
-4. Pulsa Descargar PDF por PDV (ZIP).
-5. Descomprime el ZIP: la carpeta PDF_por_PDV contiene un PDF por PDV con guías del filtro activo en todas las páginas.
-
-No necesita seleccionar las guías. No incluye otras guías seleccionadas fuera del filtro. Agrupa por repartidor, muestra guía, último estado y distrito, e incluye la portada guardada. Generación horizontal directa sin diálogo de impresión. Permite cancelar y volver a descargar el ZIP generado.
-No requiere cambios SQL ni nueva carga de fuentes. Incluye los últimos ajustes de colores y anchos del resumen V2.
+RESUMEN COMPACTO + DESCARGA PNG
+Reemplaza index.html, pdv.html, gestion-v2.html y pdv-v2.html en la raíz de GitHub.
+Espera el despliegue y recarga con Ctrl+F5.
+La tabla resumen tiene un máximo de 1100 píxeles, columnas ajustadas y valores cero en blanco, incluidos subtotales.
+El botón Descargar imagen del resumen genera un PNG con los filtros y grupos desplegados actuales. Incluye todas las filas desplegadas aunque necesites desplazarte para verlas.
+Para incluir una región o área contraída, despliégala antes de descargar.
+Los valores y cálculos no cambian. Conserva la exportación PDF por PDV previa (mantén pdf-pdv.js en GitHub).

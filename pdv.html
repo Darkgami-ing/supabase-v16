@@ -82,7 +82,16 @@
 .summary-table thead tr:last-child th:nth-child(2),.summary-table thead tr:last-child th:nth-child(4){background:#ddd6fe!important;color:#4c1d95!important}
 .summary-table tbody tr.brecha-data-row:not(.summary-row-active) td:nth-child(5):not(.summary-selected),.summary-table tbody tr.brecha-data-row:not(.summary-row-active) td:nth-child(7):not(.summary-selected){background:#f3e8ff}
 </style>
-<style>.date-filter-row{grid-column:1/-1;width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:12px;margin-top:8px}
+<style>/* Tabla centrada y compacta: conserva todas las columnas y permite ajustar encabezados. */
+#tablaResumen,#tablaResumenV2{width:100%!important;max-width:1100px!important;min-width:0!important;table-layout:fixed!important;margin:0 auto!important}
+#tablaResumen col{width:auto!important}
+#tablaResumen col:first-child{width:9%!important}
+#tablaResumen th,#tablaResumen td,#tablaResumenV2 th,#tablaResumenV2 td{min-width:0!important;padding-left:3px!important;padding-right:3px!important;white-space:normal!important;overflow-wrap:anywhere;font-size:10px}
+#tablaResumen th,#tablaResumenV2 th{line-height:1.15}
+#tablaResumen .btn-comment,#tablaResumenV2 .btn-comment{max-width:100%;padding:4px 3px}
+.resumen-imagen-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px auto;max-width:1100px}
+.resumen-imagen-toolbar small,.resumen-imagen-toolbar [role=status]{font-size:12px;color:#475569}
+</style><style>.date-filter-row{grid-column:1/-1;width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:12px;margin-top:8px}
 .date-filter-row fieldset{min-width:0;margin:0;border:1px solid #dbe4ee!important;border-radius:10px!important;background:#f8fafc;padding:12px 14px!important;display:flex!important;align-items:center;align-content:start;gap:10px!important;flex-wrap:wrap}
 .date-filter-row legend{font-size:12px;font-weight:700;color:#334155;padding:0 6px}
 .date-filter-row label{font-size:12px;color:#475569;display:inline-flex;align-items:center;gap:6px}
@@ -114,7 +123,7 @@
       <div id="viewGestion" class="app-view">
       <div class="cards"><div class="card"><b id="total">0</b><span>Total</span></div><div class="card"><b id="pendientes">0</b><span>Pendientes</span></div><div class="card"><b id="proceso">0</b><span>En proceso</span></div><div class="card"><b id="finalizados">0</b><span>Finalizados</span></div></div>
 
-      <section class="panel"><div class="panel-title">Resumen de Brecha y Cola Larga <span class="readonly-note">SOLO LECTURA</span></div><div class="table-wrap"><table class="summary-table">
+      <section class="panel"><div class="panel-title">Resumen de Brecha y Cola Larga <span class="readonly-note">SOLO LECTURA</span></div><div class="resumen-imagen-toolbar"><button type="button" class="secondary" id="btnImagenResumen" onclick="descargarImagenResumen()">Descargar imagen del resumen</button><small>PNG · Filtros y grupos desplegados actuales</small><span id="estadoImagenResumen" role="status"></span><a id="enlaceImagenResumen" hidden="">Descargar PNG</a></div><div class="table-wrap"><table class="summary-table">
         <colgroup><col class="col-pdv"><col class="col-despachos"><col class="col-case" span="11"><col class="col-total"><col class="col-critical"><col class="col-unique"></colgroup>
         <thead><tr><th rowspan="3">PDV</th><th rowspan="3" class="summary-despachos">DESPACHOS<br>AYER</th><th colspan="5">COLA LARGA</th><th colspan="6">BRECHA DE TRAZABILIDAD</th><th rowspan="3">TOTAL</th><th rowspan="3" class="summary-critical" title="720H + mayor144 En PDV + No llegados desde 168h">TOTAL CRÍTICO</th><th rowspan="3">GUÍAS ÚNICAS</th></tr><tr><th rowspan="2">120 O 168H</th><th colspan="2">360H</th><th colspan="2">720H</th><th colspan="2">超48 &lt; 120小时</th><th colspan="2">超120 &lt; 144小时</th><th colspan="2">超144小时</th></tr><tr><th>No Devuelto</th><th>Por Devolver</th><th>No Devuelto</th><th>Por Devolver</th><th>En el PDV</th><th>No llegados al PDV</th><th>En el PDV</th><th>No llegados al PDV</th><th>En el PDV</th><th>No llegados al PDV</th></tr></thead>
         <tbody id="resumenBody"></tbody>
@@ -843,4 +852,44 @@ async function exportarPdfPdvFiltrados(){
  finally{exportacionPdvControl=null;btn.disabled=false;cancel.hidden=true;}
 }
 function cancelarExportacionPdfPdv(){exportacionPdvControl?.abort();}
+</script><script>function ocultarCerosResumen(){
+ document.querySelectorAll('#resumenBody td').forEach(td=>{
+  if(!td.children.length&&/^0(?:[.,]0+)?$/.test(td.textContent.trim()))td.textContent='';
+ });
+}
+function iniciarResumenImagen(){
+ const body=document.getElementById('resumenBody');if(!body)return;
+ ocultarCerosResumen();new MutationObserver(ocultarCerosResumen).observe(body,{childList:true,subtree:true,characterData:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciarResumenImagen);else iniciarResumenImagen();
+async function descargarImagenResumen(){
+ const button=document.getElementById('btnImagenResumen'),status=document.getElementById('estadoImagenResumen');
+ if(button.disabled)return;button.disabled=true;status.textContent='Preparando imagen…';
+ try{
+  await document.fonts.ready;ocultarCerosResumen();
+  const table=document.getElementById('resumenBody').closest('table');
+  if(!table.tBodies[0]?.rows.length)throw Error('No hay datos en la tabla resumen.');
+  const rect=table.getBoundingClientRect(),width=Math.ceil(rect.width),height=Math.ceil(rect.height);
+  if(!width||!height)throw Error('Abre la tabla resumen antes de descargarla.');
+  const clone=table.cloneNode(true),originals=[table,...table.querySelectorAll('*')],copies=[clone,...clone.querySelectorAll('*')];
+  originals.forEach((el,i)=>{
+   const computed=getComputedStyle(el),copy=copies[i];copy.removeAttribute('id');copy.removeAttribute('onclick');
+   for(const prop of computed)copy.style.setProperty(prop,computed.getPropertyValue(prop),'important');
+   copy.style.setProperty('animation','none','important');copy.style.setProperty('transition','none','important');
+   copy.style.setProperty('position','static','important');
+  });
+  clone.style.setProperty('margin','0','important');clone.style.setProperty('width',width+'px','important');clone.style.setProperty('min-width',width+'px','important');clone.style.setProperty('max-width',width+'px','important');
+  const wrapper=document.createElement('div');wrapper.setAttribute('xmlns','http://www.w3.org/1999/xhtml');wrapper.style='background:white;width:'+width+'px;height:'+height+'px;overflow:hidden';wrapper.append(clone);
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><foreignObject width="100%" height="100%">'+new XMLSerializer().serializeToString(wrapper)+'</foreignObject></svg>';
+  const img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('No se pudo convertir la tabla en imagen.'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);});
+  // Ajusta resolución para tablas largas sin superar los límites habituales del lienzo.
+  const scale=Math.min(2,16000/width,16000/height,Math.sqrt(50000000/(width*height)));
+  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.ceil(width*scale));canvas.height=Math.max(1,Math.ceil(height*scale));
+  const ctx=canvas.getContext('2d');if(!ctx)throw Error('El navegador no pudo preparar la imagen.');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));if(!blob)throw Error('No se pudo generar el PNG. Reduce las filas con los filtros e inténtalo nuevamente.');
+  const link=document.getElementById('enlaceImagenResumen');if(link.dataset.url)URL.revokeObjectURL(link.dataset.url);
+  link.href=URL.createObjectURL(blob);link.dataset.url=link.href;link.download='Resumen_Guias_'+new Date().toISOString().replace(/[:.]/g,'-')+'.png';link.hidden=false;link.click();
+  status.textContent='Imagen lista · filtros y grupos desplegados actuales.';
+ }catch(e){status.textContent=e.message||String(e);toast(status.textContent,false);}finally{button.disabled=false;}
+}
 </script></body></html>
